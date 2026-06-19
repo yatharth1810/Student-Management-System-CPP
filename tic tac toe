@@ -1,0 +1,113 @@
+#include <iostream>
+
+using namespace std;
+
+class TicTacToe {
+private:
+    char board[3][3];
+    char currentMarker;
+
+    void resetBoard() {
+        char start = '1';
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                board[i][j] = start++;
+            }
+        }
+        currentMarker = 'X';
+    }
+
+public:
+    TicTacToe() {
+        resetBoard();
+    }
+
+    void drawBoard() {
+        cout << "\n     |     |     \n";
+        cout << "  " << board[0][0] << "  |  " << board[0][1] << "  |  " << board[0][2] << " \n";
+        cout << "_____|_____|_____\n";
+        cout << "     |     |     \n";
+        cout << "  " << board[1][0] << "  |  " << board[1][1] << "  |  " << board[1][2] << " \n";
+        cout << "_____|_____|_____\n";
+        cout << "     |     |     \n";
+        cout << "  " << board[2][0] << "  |  " << board[2][1] << "  |  " << board[2][2] << " \n";
+        cout << "     |     |     \n\n";
+    }
+
+    bool placeMarker(int slot) {
+        int row = (slot - 1) / 3;
+        int col = (slot - 1) % 3;
+
+        if (slot < 1 || slot > 9 || board[row][col] == 'X' || board[row][col] == 'O') {
+            return false;
+        }
+
+        board[row][col] = currentMarker;
+        return true;
+    }
+
+    int checkWinner() {
+        // Rows and Columns check
+        for (int i = 0; i < 3; i++) {
+            if (board[i][0] == board[i][1] && board[i][1] == board[i][2]) return 1;
+            if (board[0][i] == board[1][i] && board[1][i] == board[2][i]) return 1;
+        }
+        // Diagonals check
+        if (board[0][0] == board[1][1] && board[1][1] == board[2][2]) return 1;
+        if (board[0][2] == board[1][1] && board[1][1] == board[2][0]) return 1;
+
+        return 0;
+    }
+
+    void swapPlayer() {
+        currentMarker = (currentMarker == 'X') ? 'O' : 'X';
+    }
+
+    void playGame() {
+        char replay;
+        do {
+            resetBoard();
+            int playerWon = 0;
+            int totalMoves = 0;
+
+            cout << "\n=== Tic Tac Toe Console Game ===\n";
+
+            while (playerWon == 0 && totalMoves < 9) {
+                drawBoard();
+                int slot;
+                cout << "Player " << currentMarker << ", enter your move (1-9): ";
+                cin >> slot;
+
+                if (!placeMarker(slot)) {
+                    cout << "Invalid move! Slot is taken or out of bounds. Try again.\n";
+                    continue;
+                }
+
+                playerWon = checkWinner();
+                if (playerWon == 1) {
+                    drawBoard();
+                    cout << "Congratulations! Player " << currentMarker << " wins!\n";
+                    break;
+                }
+
+                swapPlayer();
+                totalMoves++;
+            }
+
+            if (playerWon == 0 && totalMoves == 9) {
+                drawBoard();
+                cout << "It's a tie game!\n";
+            }
+
+            cout << "Do you want to play again? (y/n): ";
+            cin >> replay;
+
+        } while (replay == 'y' || replay == 'Y');
+    }
+};
+
+int main() {
+    TicTacToe game;
+    game.playGame();
+    return 0;
+}
